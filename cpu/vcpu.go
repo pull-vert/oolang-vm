@@ -1,3 +1,5 @@
+// Copyright 2019 oolang's author : Frédéric Montariol. Use of this source code is governed by the Apache 2.0 license.
+
 package cpu
 
 // A Virtual CPU
