@@ -5,15 +5,24 @@ package cpu
 // A Virtual CPU
 type VCPU struct {
 	// Registers
-	registers [32]uint64
+	Registers [32]uint64
+	Pc        int
+	Program   []byte
 }
 
 //
 // CPU / VM functions
 //
 
-// NewVM returns a new VCPU object.
+// Creates and returns a new Instruction
 func NewVCPU() *VCPU {
 	x := &VCPU{}
 	return x
+}
+
+// Return the next Opcode
+func (cpu *VCPU) NextOpcode() byte {
+	opcode := cpu.Program[cpu.Pc]
+	cpu.Pc += 1
+	return opcode
 }
