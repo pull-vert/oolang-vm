@@ -2,11 +2,14 @@
 
 package cpu
 
-import "testing"
+import (
+	"encoding/binary"
+	"testing"
+)
 
 // Test create a new VCPU
 func TestCreateVCPU(t *testing.T) {
-	vcpu := NewVCPU()
+	vcpu := NewVCPU(binary.LittleEndian)
 	t.Logf("VCPU register length=%d, Program counter=%d, Program length=%d", len(vcpu.Registers), vcpu.Pc, len(vcpu.Program))
 	if vcpu.Registers[0] != 0 {
 		t.Errorf("New register contains a value!")
@@ -19,5 +22,57 @@ func TestCreateVCPU(t *testing.T) {
 	}
 	if len(vcpu.Program) != 0 {
 		t.Errorf("Program length is not 0 but %d", len(vcpu.Program))
+	}
+}
+
+// Test Execute a single HALT opcode instruction
+func TestExecuteHaltOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{0, 0, 0, 0}
+	vcpu.Program = testBytes
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 1 {
+		t.Errorf("expected pointer count to 1, was %d", vcpu.Pc)
+	}
+}
+
+// Test Execute a single LOAD opcode instruction
+func TestExecuteLoadOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{1, 0, 244, 1} // This is how we represent 500 using two u8s in little endian format
+	vcpu.Program = testBytes
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[0] != 500 {
+		t.Errorf("expected Register 0 to contain 500, was %d", vcpu.Registers[0])
+	}
+}
+
+// Test Execute a single ADD opcode instruction
+func TestExecuteAddOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{2, 0, 1, 2} // Register[2] = Register[0] + Register[1]
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 10
+	vcpu.Registers[1] = 15
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[2] != 25 {
+		t.Errorf("expected Register 2 to contain 25 (10 + 15), was %d", vcpu.Registers[2])
+	}
+}
+
+// Test Execute a single Unknown opcode instruction
+func TestExecuteUnknownOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{200, 0, 0, 0}
+	vcpu.Program = testBytes
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 1 {
+		t.Errorf("expected pointer count to 1, was %d", vcpu.Pc)
 	}
 }

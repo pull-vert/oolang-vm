@@ -9,6 +9,8 @@ type Opcode byte
 // list all opcodes
 const (
 	HALT Opcode = 0x00
+	LOAD Opcode = 0x01
+	ADD  Opcode = 0x02
 )
 
 // an instruction is 32bits, 8-bits for the opcode and up to 3 8-bits operands

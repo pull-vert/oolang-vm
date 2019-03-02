@@ -3,28 +3,32 @@
 package oolang_vm
 
 import (
+	"encoding/binary"
 	"oolang-vm/cpu"
 	"testing"
 )
 
-// Test Run a VM with a single HALT opcode instruction
-func TestOpcodeHalt(t *testing.T) {
-	vcpu := cpu.NewVCPU()
+// Test RunOnce a VM with a single HALT opcode instruction
+func TestHaltOpcode(t *testing.T) {
+	vcpu := cpu.NewVCPU(binary.LittleEndian)
 	testBytes := []byte{0, 0, 0, 0}
 	vcpu.Program = testBytes
-	Run(vcpu)
+	runOnce(vcpu)
 	if vcpu.Pc != 1 {
 		t.Errorf("expected pointer count to 1, was %d", vcpu.Pc)
 	}
 }
 
-// Test Run a VM with a single Unknown opcode instruction
-func TestOpcodeUnknown(t *testing.T) {
-	vcpu := cpu.NewVCPU()
-	testBytes := []byte{200, 0, 0, 0}
+// Test Run a VM with a single LOAD opcode instruction
+func TestLoadOpcode(t *testing.T) {
+	vcpu := cpu.NewVCPU(binary.LittleEndian)
+	testBytes := []byte{1, 0, 244, 1} // This is how we represent 500 using two u8s in little endian format
 	vcpu.Program = testBytes
-	Run(vcpu)
-	if vcpu.Pc != 1 {
-		t.Errorf("expected pointer count to 1, was %d", vcpu.Pc)
+	run(vcpu)
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[0] != 500 {
+		t.Errorf("expected Register 0 to contain 500, was %d", vcpu.Registers[0])
 	}
 }

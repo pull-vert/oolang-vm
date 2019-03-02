@@ -5,7 +5,7 @@ package cpu
 import "testing"
 
 // Test HALT opcode
-func TestHaltOpcode(t *testing.T) {
+func TestHaltOpcodeByteValue(t *testing.T) {
 	if HALT != 0x00 {
 		t.Errorf("HALT opcode byte value must be equal to 0x00!")
 	}

@@ -3,7 +3,6 @@
 package oolang_vm
 
 import (
-	"fmt"
 	"oolang-vm/cpu"
 )
 
@@ -11,21 +10,21 @@ import (
 // VM functions
 //
 
-func Run(vcpu *cpu.VCPU) {
-	for {
-		// If our program counter has exceeded the length of the program itself, something has
-		// gone awry
-		if vcpu.Pc >= len(vcpu.Program) {
+// Loops as long as instructions can be executed.
+func run(vcpu *cpu.VCPU) {
+	isDone := false
+	progLen := len(vcpu.Program)
+	for !isDone {
+		// If our program counter has exceeded the length of the program itself,
+		// something has gone awry
+		if vcpu.Pc >= progLen {
 			break
 		}
-		opcode := vcpu.NextOpcode()
-		switch opcode {
-		case byte(cpu.HALT):
-			fmt.Printf("HALT encountered, terminating")
-			return
-		default:
-			fmt.Printf("Unrecognized opcode found : %x ! Terminating!", opcode)
-			return
-		}
+		isDone = vcpu.ExecuteInstruction()
 	}
+}
+
+// Executes one instruction. Meant to allow for more controlled execution of the VM
+func runOnce(vcpu *cpu.VCPU) {
+	vcpu.ExecuteInstruction()
 }
