@@ -11,6 +11,9 @@ const (
 	HALT Opcode = 0x00
 	LOAD Opcode = 0x01
 	ADD  Opcode = 0x02
+	SUB  Opcode = 0x03
+	MUL  Opcode = 0x04
+	DIV  Opcode = 0x05
 )
 
 // an instruction is 32bits, 8-bits for the opcode and up to 3 8-bits operands

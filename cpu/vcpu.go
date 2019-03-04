@@ -14,6 +14,7 @@ type VCPU struct {
 	Pc        int
 	Program   []byte
 	endianess binary.ByteOrder
+	remainder uint64
 }
 
 //
@@ -30,10 +31,6 @@ func NewVCPU(endianess binary.ByteOrder) *VCPU {
 func (vcpu *VCPU) ExecuteInstruction() bool {
 	opcodeByte := vcpu.NextByte()
 	switch opcodeByte {
-	case byte(HALT): // Normal terminate program
-		fmt.Printf("HALT encountered, terminating")
-		fmt.Println()
-		return true
 	case byte(LOAD): // load a uint16 (from operand 2 and 3) into Register[operand 1]
 		register := vcpu.NextUint8()
 		number := vcpu.NextUint16()
@@ -42,6 +39,23 @@ func (vcpu *VCPU) ExecuteInstruction() bool {
 		val1 := vcpu.Registers[vcpu.NextUint8()]
 		val2 := vcpu.Registers[vcpu.NextUint8()]
 		vcpu.Registers[vcpu.NextUint8()] = val1 + val2
+	case byte(SUB): // Register[operand 3] = Register[operand 1] - Register[operand 2]
+		val1 := vcpu.Registers[vcpu.NextUint8()]
+		val2 := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Registers[vcpu.NextUint8()] = val1 - val2
+	case byte(MUL): // Register[operand 3] = Register[operand 1] * Register[operand 2]
+		val1 := vcpu.Registers[vcpu.NextUint8()]
+		val2 := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Registers[vcpu.NextUint8()] = val1 * val2
+	case byte(DIV): // Register[operand 3] = Register[operand 1] / Register[operand 2]
+		val1 := vcpu.Registers[vcpu.NextUint8()]
+		val2 := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Registers[vcpu.NextUint8()] = val1 / val2
+		vcpu.remainder = uint64(val1 % val2)
+	case byte(HALT): // Normal terminate program
+		fmt.Printf("HALT encountered, terminating")
+		fmt.Println()
+		return true
 	default: // Unrecognized opcode, we don't know what to do with it, terminate program
 		fmt.Printf("Unrecognized opcodeByte found : %x ! Terminating!", opcodeByte)
 		fmt.Println()

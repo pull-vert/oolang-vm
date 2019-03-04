@@ -66,6 +66,76 @@ func TestExecuteAddOpcode(t *testing.T) {
 	}
 }
 
+// Test Execute a single SUB opcode instruction
+func TestExecuteSubOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{3, 0, 1, 2} // Register[2] = Register[0] + Register[1]
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 10
+	vcpu.Registers[1] = 15
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[2] != -5 {
+		t.Errorf("expected Register 2 to contain -5 (10 - 15), was %d", vcpu.Registers[2])
+	}
+}
+
+// Test Execute a single MUL opcode instruction
+func TestExecuteMulOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{4, 0, 1, 2} // Register[2] = Register[0] + Register[1]
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 10
+	vcpu.Registers[1] = 15
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[2] != 150 {
+		t.Errorf("expected Register 2 to contain 150 (10 * 15), was %d", vcpu.Registers[2])
+	}
+}
+
+// Test Execute a single DIV opcode instruction
+func TestExecuteDivOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{5, 0, 1, 2} // Register[2] = Register[0] + Register[1]
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 10
+	vcpu.Registers[1] = 15
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[2] != 0 {
+		t.Errorf("expected Register 2 to contain 0 (10 / 15), was %d", vcpu.Registers[2])
+	}
+	if vcpu.remainder != 10 {
+		t.Errorf("expected Register 2 to contain 10 (10 remainder 15), was %d", vcpu.remainder)
+	}
+}
+
+// Test Execute a single DIV opcode instruction
+func TestExecuteDiv2Opcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{5, 0, 1, 2} // Register[2] = Register[0] + Register[1]
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 21
+	vcpu.Registers[1] = 10
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 4 {
+		t.Errorf("expected pointer count to 4, was %d", vcpu.Pc)
+	}
+	if vcpu.Registers[2] != 2 {
+		t.Errorf("expected Register 2 to contain 2 (21 / 10), was %d", vcpu.Registers[2])
+	}
+	if vcpu.remainder != 1 {
+		t.Errorf("expected Register 2 to contain 1 (21 remainder 10), was %d", vcpu.remainder)
+	}
+}
+
 // Test Execute a single Unknown opcode instruction
 func TestExecuteUnknownOpcode(t *testing.T) {
 	vcpu := NewVCPU(binary.LittleEndian)
