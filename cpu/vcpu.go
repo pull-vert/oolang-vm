@@ -39,6 +39,15 @@ func (vcpu *VCPU) ExecuteInstruction() bool {
 		val1 := vcpu.Registers[vcpu.NextUint8()]
 		val2 := vcpu.Registers[vcpu.NextUint8()]
 		vcpu.Registers[vcpu.NextUint8()] = val1 + val2
+	case byte(JMP): // jump to PC = Register[operand 1] address
+		target := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Pc = int(target)
+	case byte(JMPF): // jump to PC += Register[operand 1] address
+		target := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Pc += int(target)
+	case byte(JMPB): // jump to PC -= Register[operand 1] address
+		target := vcpu.Registers[vcpu.NextUint8()]
+		vcpu.Pc -= int(target)
 	case byte(SUB): // Register[operand 3] = Register[operand 1] - Register[operand 2]
 		val1 := vcpu.Registers[vcpu.NextUint8()]
 		val2 := vcpu.Registers[vcpu.NextUint8()]

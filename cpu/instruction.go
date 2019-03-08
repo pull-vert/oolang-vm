@@ -14,6 +14,9 @@ const (
 	SUB  Opcode = 0x03
 	MUL  Opcode = 0x04
 	DIV  Opcode = 0x05
+	JMP  Opcode = 0x06
+	JMPF Opcode = 0x07
+	JMPB Opcode = 0x08
 )
 
 // an instruction is 32bits, 8-bits for the opcode and up to 3 8-bits operands

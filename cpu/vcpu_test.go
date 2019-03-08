@@ -136,6 +136,42 @@ func TestExecuteDiv2Opcode(t *testing.T) {
 	}
 }
 
+// Test Execute a single JMP opcode instruction
+func TestExecuteJumpOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{6, 0, 0, 0} // jump to PC = Register[0] address
+	vcpu.Program = testBytes
+	vcpu.Registers[0] = 42
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 42 {
+		t.Errorf("expected pointer count to 42, was %d", vcpu.Pc)
+	}
+}
+
+// Test Execute a single JMPF opcode instruction
+func TestExecuteJumpForwardOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{7, 1, 0, 0} // jump to PC += Register[1] address
+	vcpu.Program = testBytes
+	vcpu.Registers[1] = 42
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 44 {
+		t.Errorf("expected pointer count to 44, was %d", vcpu.Pc)
+	}
+}
+
+// Test Execute a single JMPB opcode instruction
+func TestExecuteJumpBackwardOpcode(t *testing.T) {
+	vcpu := NewVCPU(binary.LittleEndian)
+	testBytes := []byte{8, 20, 0, 0} // jump to PC -= Register[20] address
+	vcpu.Program = testBytes
+	vcpu.Registers[20] = 1
+	vcpu.ExecuteInstruction()
+	if vcpu.Pc != 1 {
+		t.Errorf("expected pointer count to 1, was %d", vcpu.Pc)
+	}
+}
+
 // Test Execute a single Unknown opcode instruction
 func TestExecuteUnknownOpcode(t *testing.T) {
 	vcpu := NewVCPU(binary.LittleEndian)
